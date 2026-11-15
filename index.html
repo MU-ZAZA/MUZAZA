@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MUZAZA – קטלוג מוצרים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Varela+Round&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ff3fb4; --magenta:#d63be8; --purple:#7b3ff2; --cyan:#22d3ee; --yellow:#ffd23f; --orange:#ff9a3c;
+    --ink:#2b1640; --muted:#6f5a86; --bg:#fff7fd; --card:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Fredoka","Varela Round",system-ui,sans-serif;color:var(--ink);background:var(--bg);
+    background-image:radial-gradient(circle at 10% 10%,#ffe3f6 0,transparent 35%),radial-gradient(circle at 90% 30%,#e3f4ff 0,transparent 35%),radial-gradient(circle at 50% 100%,#f1e4ff 0,transparent 40%);
+    background-attachment:fixed;min-height:100vh}
+  header{text-align:center;padding:24px 16px 8px}
+  header img{width:min(420px,88vw);height:auto;filter:drop-shadow(0 8px 18px rgba(214,59,232,.25))}
+  .tagline{margin:4px auto 0;max-width:520px;color:var(--muted);font-size:1.05rem}
+  .demo-note{max-width:900px;margin:16px auto 0;padding:10px 16px;border-radius:14px;background:#fff3c4;border:2px dashed var(--orange);
+    font-size:.95rem;text-align:center}
+  nav.cats{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:22px 16px 6px;position:sticky;top:0;z-index:5;
+    background:linear-gradient(var(--bg) 70%,transparent)}
+  .chip{font:inherit;font-weight:600;font-size:1rem;border:0;cursor:pointer;padding:10px 20px;border-radius:999px;background:#fff;color:var(--purple);
+    box-shadow:0 2px 0 #e6d6ff,0 4px 14px rgba(123,63,242,.12);transition:transform .15s}
+  .chip:hover{transform:translateY(-2px)}
+  .chip.active{color:#fff;background:linear-gradient(90deg,var(--pink),var(--magenta),var(--purple));box-shadow:0 4px 16px rgba(214,59,232,.35)}
+  main{max-width:1100px;margin:0 auto;padding:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
+  .card{background:var(--card);border-radius:22px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;
+    box-shadow:0 6px 24px rgba(123,63,242,.10);border:3px solid transparent;transition:transform .18s,border-color .18s}
+  .card:hover{transform:translateY(-4px);border-color:var(--pink)}
+  .card .img{aspect-ratio:3/4;background:#fdf0fb;position:relative}
+  .card .img svg,.card .img img{width:100%;height:100%;display:block;object-fit:cover}
+  .code{position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,.92);color:var(--purple);font-weight:700;font-size:.8rem;padding:3px 9px;border-radius:999px}
+  .stamp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.35)}
+  .stamp span{transform:rotate(-14deg);border:4px solid var(--pink);color:var(--pink);background:rgba(255,255,255,.9);font-weight:700;font-size:1.7rem;padding:6px 18px;border-radius:14px;box-shadow:0 4px 14px rgba(255,63,180,.3)}
+  .card.sold img,.card.sold svg{filter:saturate(.6)}
+  .wa.similar{background:linear-gradient(90deg,var(--pink),var(--purple))}
+  .badge{position:absolute;top:10px;right:10px;background:var(--yellow);color:var(--ink);font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:999px}
+  .card .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .card h3{margin:0;font-size:1.15rem}
+  .card p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.4}
+  .price{margin-top:auto;font-weight:700;font-size:1.25rem;background:linear-gradient(90deg,var(--pink),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .soon-tag{display:inline-block;background:var(--yellow);color:var(--ink);font-size:.75rem;padding:2px 8px;border-radius:999px;margin-inline-end:4px}
+  .chip.soon{border:2px dashed var(--orange)}
+  .soon-box{grid-column:1/-1;background:#fff;border-radius:22px;border:3px dashed var(--pink);font-size:1.1rem}
+  .soon-box .big{font-size:2rem;font-weight:700;color:var(--magenta);margin-bottom:8px}
+  .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px}
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(43,22,64,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+  .overlay.open{display:flex}
+  .modal{background:#fff;border-radius:26px;max-width:760px;width:100%;max-height:92vh;overflow:auto;display:grid;grid-template-columns:1fr 1fr;position:relative}
+  .modal .img{background:#fdf0fb;aspect-ratio:3/4;position:relative}
+  .modal .img svg,.modal .img img{width:100%;height:100%;display:block;object-fit:cover}
+  .modal .info{padding:26px 24px;display:flex;flex-direction:column;gap:10px}
+  .modal h2{margin:0;font-size:1.6rem}
+  .modal .cat{color:var(--magenta);font-weight:600}
+  .modal .price{margin-top:0}
+  .modal .info{justify-content:center}
+  .modal ul{margin:0;padding-inline-start:18px;color:var(--muted)}
+  .close{position:absolute;top:10px;left:10px;width:38px;height:38px;border-radius:50%;border:0;background:#fff;font-size:1.4rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);z-index:2}
+  .wa{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;padding:14px 18px;border-radius:16px;background:#25d366;color:#fff;
+    font-weight:700;font-size:1.1rem;text-decoration:none}
+  .small{font-size:.85rem;color:var(--muted)}
+  footer{text-align:center;padding:36px 16px 48px;color:var(--muted)}
+  footer .wa{margin:10px auto}
+  @media (max-width:640px){.modal{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr);gap:12px}
+    nav.cats{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;padding:16px 12px 6px;scrollbar-width:none}
+    .chip{flex:0 0 auto;padding:8px 16px}.demo-note{margin:12px}
+    .card .body{padding:10px 12px 12px}.card h3{font-size:1rem}.card p{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.webp" alt="MUZAZA – אקססוריז בעיצוב מיוחד">
+  <p class="tagline">תכשיטים ואקססוריז מחרוזים, בעבודת יד ✨</p>
+</header>
+
+<nav class="cats" id="cats"></nav>
+
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>
+  <div>רוצה להזמין או לשאול שאלה? דברו איתנו:</div>
+  <a class="wa" id="footerWa" href="#" target="_blank" rel="noopener">💬 שלחו הודעה בוואטסאפ</a>
+  <div class="small" id="phoneText"></div>
+</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="close" id="closeBtn" aria-label="סגירה">×</button>
+    <div class="img" id="mImg"></div>
+    <div class="info">
+      <div class="cat" id="mCat"></div>
+      <h2 id="mName"></h2>
+      <div class="price" id="mPrice"></div>
+      <p id="mDesc"></p>
+      <ul id="mDetails"></ul>
+      <a class="wa" id="mWa" href="#" target="_blank" rel="noopener">💬 להזמנה בוואטסאפ</a>
+      <div class="small">ההזמנה נשלחת ישירות אלינו בוואטסאפ</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== הגדרות עסק ===== */
+const PHONE = "972523694404";
+const PHONE_DISPLAY = "052-369-4404";
+
+/* ===== קטגוריות ===== */
+// soon:true = קטגוריה שתופיע עם תווית "בקרוב!"
+const CATEGORIES = [
+  {name:"מחזיקי מפתחות"}, {name:"עטים"}, {name:"מראות"}, {name:"מסרקים"},
+  {name:"מברשות איפור"}, {name:"סטים"}, {name:"מארזי הפתעה"}, {name:"מגנטים", soon:true}
+];
+
+/* ===== מוצרים (לדוגמה) ===== */
+const PRODUCTS = [
+  // code = מספר המוצר (גם על התגית בדוכן) · sold:true = נמכר
+  {id:101, code:"001", name:"מחזיק מפתחות סטיץ׳", cat:"מחזיקי מפתחות", price:15, desc:"מחזיק מפתחות סטיץ׳ בצבעי ורוד ותכלת.", details:["פריט יחיד – יש רק אחד!"], image:"img/001.jpg", badge:"חדש"},
+  {id:102, code:"002", name:"מחזיק מפתחות סטיץ׳", cat:"מחזיקי מפתחות", price:15, desc:"מחזיק מפתחות סטיץ׳ בצבעי תכלת וכחול מלכותי.", details:["פריט יחיד – יש רק אחד!"], image:"img/002.jpg", badge:"חדש"},
+  {id:103, code:"003", name:"מחזיק מפתחות סטיץ׳", cat:"מחזיקי מפתחות", price:15, desc:"מחזיק מפתחות סטיץ׳ בצבעי תכלת וכחול מלכותי.", details:["פריט יחיד – יש רק אחד!"], image:"img/003.jpg", badge:"חדש"},
+  {id:104, code:"004", name:"מחזיק מפתחות סטיץ׳", cat:"מחזיקי מפתחות", price:15, desc:"מחזיק מפתחות סטיץ׳ בצבעים שמחים – ורוד, צהוב ותכלת.", details:["פריט יחיד – יש רק אחד!"], image:"img/004.jpg", badge:"חדש"},
+  {id:105, code:"005", name:"מחזיק מפתחות סטיץ׳ ישנוני", cat:"מחזיקי מפתחות", price:15, desc:"מחזיק מפתחות סטיץ׳ ישנוני בגווני סגול מפנקים, עם נצנוצים.", details:["פריט יחיד – יש רק אחד!"], image:"img/005.jpg", badge:"חדש"},
+  {id:106, code:"006", name:"מחזיק מפתחות סטיץ׳", cat:"מחזיקי מפתחות", price:15, desc:"מחזיק מפתחות סטיץ׳ בכחולים חלומיים.", details:["פריט יחיד – יש רק אחד!"], image:"img/006.jpg", badge:"חדש"},
+  {id:107, code:"007", name:"מחזיק מפתחות סטיץ׳ מהורהר", cat:"מחזיקי מפתחות", price:15, desc:"מחזיק מפתחות סטיץ׳ מהורהר בגווני ורוד, כחול ותכלת.", details:["פריט יחיד – יש רק אחד!"], image:"img/007.jpg", badge:"חדש"},
+];
+
+/* ===== קוד האתר ===== */
+const CATS = ["הכול", ...CATEGORIES.filter(c=>c.soon || PRODUCTS.some(p=>p.cat===c.name)).map(c=>c.name)];
+const SOON = new Set(CATEGORIES.filter(c=>c.soon).map(c=>c.name));
+let current = "הכול";
+try { const h = decodeURIComponent(location.hash.slice(1)); if (CATS.includes(h)) current = h; } catch(e){}
+
+function waLink(text){ return "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(text); }
+
+// תמונות דוגמה מצוירות
+function bead(x,y,c,r=10){ return `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="#2b1640" stroke-opacity=".15" stroke-width="2"/><circle cx="${x-r*.3}" cy="${y-r*.35}" r="${r*.28}" fill="#fff" opacity=".7"/>`; }
+function beadLine(x1,y1,x2,y2,n,cols,r){ let o=""; for(let i=0;i<n;i++){const t=n==1?0:i/(n-1); o+=bead(x1+(x2-x1)*t,y1+(y2-y1)*t,cols[i%cols.length],r);} return o; }
+function beadRing(cx,cy,rx,ry,n,cols,r){ let o=""; for(let i=0;i<n;i++){const a=i/n*Math.PI*2; o+=bead(cx+rx*Math.cos(a),cy+ry*Math.sin(a),cols[i%cols.length],r);} return o; }
+function sampleArt(p){
+  const c=p.colors; let g="";
+  switch(p.cat){
+    case "מחזיקי מפתחות": g=`<circle cx="100" cy="45" r="20" fill="none" stroke="#b8b8c8" stroke-width="6"/><line x1="100" y1="65" x2="100" y2="78" stroke="#b8b8c8" stroke-width="4"/>`+beadLine(100,88,100,168,6,c,9); break;
+    case "עטים": g=`<g transform="rotate(-35 100 100)"><rect x="92" y="20" width="16" height="140" rx="6" fill="#fff" stroke="#d9c8f5" stroke-width="3"/><path d="M92 160 L100 182 L108 160Z" fill="#cfc4dd"/>`+beadLine(100,32,100,148,9,c,9)+`</g>`; break;
+    case "מראות": g=`<circle cx="100" cy="98" r="55" fill="#dff3ff"/><path d="M75 75 q15-20 40-15" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/>`+beadRing(100,98,66,66,20,c,8); break;
+    case "מסרקים": g=`<rect x="40" y="70" width="120" height="30" rx="12" fill="#fff" stroke="#e6d6ff" stroke-width="3"/>`+beadLine(52,85,148,85,8,c,8)+Array.from({length:16},(_,i)=>`<rect x="${44+i*7.2}" y="100" width="4" height="50" rx="2" fill="#e9dcff"/>`).join(""); break;
+    case "מברשות איפור": g=`<g transform="rotate(-30 100 100)"><path d="M86 20 Q100 0 114 20 L112 60 L88 60Z" fill="#f2c9a8"/><rect x="88" y="60" width="24" height="18" fill="#cfc4dd"/>`+beadLine(100,88,100,170,7,c,10)+`</g>`; break;
+    case "סטים": g=`<circle cx="75" cy="95" r="35" fill="#dff3ff"/>`+beadRing(75,95,43,43,14,c,7)+`<rect x="125" y="40" width="22" height="50" rx="8" fill="#fff" stroke="#e6d6ff" stroke-width="3"/>`+beadLine(136,48,136,82,4,c,6)+Array.from({length:6},(_,i)=>`<rect x="${127+i*3.3}" y="90" width="2" height="60" fill="#e9dcff"/>`).join(""); break;
+    case "מארזי הפתעה": g=`<rect x="45" y="85" width="110" height="80" rx="10" fill="${c[0]}"/><rect x="38" y="68" width="124" height="24" rx="8" fill="${c[1]}"/><rect x="92" y="68" width="16" height="97" fill="${c[2]}"/><path d="M100 68 C80 40 60 55 75 68Z M100 68 C120 40 140 55 125 68Z" fill="${c[2]}"/><text x="100" y="140" text-anchor="middle" font-size="40" font-weight="700" fill="#fff" font-family="sans-serif">?</text>`; break;
+    default: g=beadRing(100,100,58,50,18,c,11);
+  }
+  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fdf0fb"/><circle cx="100" cy="100" r="88" fill="#fff"/>${g}
+    <text x="100" y="194" text-anchor="middle" font-size="10" fill="#a58fbf" font-family="sans-serif">תמונה לדוגמה</text></svg>`;
+}
+function priceText(p){ return p.price ? "₪"+p.price : "מחיר בקרוב"; }
+function imgHtml(p){ return p.image ? `<img src="${p.image}" alt="${p.name}">` : sampleArt(p); }
+
+function renderCats(){
+  const nav = document.getElementById("cats");
+  nav.innerHTML = CATS.map(c=>`<button class="chip ${c===current?"active":""} ${SOON.has(c)?"soon":""}" data-c="${c}">${SOON.has(c)?'<span class="soon-tag">בקרוב!</span> ':""}${c}</button>`).join("");
+  nav.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{ current=b.dataset.c; try{history.replaceState(null,"",current==="הכול"?location.pathname:"#"+encodeURIComponent(current))}catch(e){} renderCats(); renderGrid(); });
+}
+function renderGrid(){
+  const list = PRODUCTS.filter(p=>current==="הכול"||p.cat===current).sort((a,b)=>(a.sold?1:0)-(b.sold?1:0));
+  const g = document.getElementById("grid");
+  if(SOON.has(current) && !list.length){ g.innerHTML = `<div class="empty soon-box"><div class="big">✨ בקרוב! ✨</div>${current} מחרוזים בדרך אלינו – שווה לחזור לבדוק</div>`; return; }
+  if(!list.length){ g.innerHTML = `<div class="empty">אין עדיין מוצרים בקטגוריה הזו</div>`; return; }
+  g.innerHTML = list.map(p=>`<div class="card ${p.sold?"sold":""}" data-id="${p.id}" tabindex="0">
+      <div class="img">${imgHtml(p)}${p.badge&&!p.sold?`<span class="badge">${p.badge}</span>`:""}${p.code?`<span class="code">#${p.code}</span>`:""}${p.sold?`<div class="stamp"><span>נמכר! 💖</span></div>`:""}</div>
+      <div class="body"><h3>${p.name}</h3><p>${p.desc}</p><div class="price">${priceText(p)}</div></div></div>`).join("");
+  g.querySelectorAll(".card").forEach(c=>{ c.onclick=()=>openP(+c.dataset.id); c.onkeydown=e=>{if(e.key==="Enter")openP(+c.dataset.id)}; });
+}
+function openP(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  mImg.innerHTML = imgHtml(p) + (p.sold?`<div class="stamp"><span>נמכר! 💖</span></div>`:"");
+  mCat.textContent = p.cat + (p.code?"  ·  #"+p.code:""); mName.textContent = p.name;
+  mPrice.textContent = priceText(p); mDesc.textContent = p.desc;
+  mDetails.innerHTML = (p.details||[]).map(d=>`<li>${d}</li>`).join("");
+  const tag = p.code ? ` #${p.code}` : "";
+  if (p.sold){ mWa.className="wa similar"; mWa.textContent="✨ רוצה אחד דומה?";
+    mWa.href = waLink(`היי MUZAZA! 💖 ראיתי את ${p.name}${tag} שנמכר – אפשר להכין לי משהו דומה?`); }
+  else { mWa.className="wa"; mWa.textContent="💬 להזמנה בוואטסאפ";
+    mWa.href = waLink(`היי MUZAZA! 💖 אני רוצה להזמין: ${p.name}${tag}` + (p.price?` (₪${p.price})`:"")); }
+  overlay.classList.add("open");
+}
+function closeP(){ overlay.classList.remove("open"); }
+closeBtn.onclick = closeP;
+overlay.onclick = e=>{ if(e.target===overlay) closeP(); };
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeP(); });
+footerWa.href = waLink("היי MUZAZA! 💖 יש לי שאלה");
+phoneText.textContent = "או בטלפון: " + PHONE_DISPLAY;
+
+renderCats(); renderGrid();
+</script>
+</body>
+</html>
