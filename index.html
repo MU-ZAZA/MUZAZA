@@ -132,7 +132,7 @@ const PRODUCTS = [
 ];
 
 /* ===== קוד האתר ===== */
-const CATS = ["הכול", ...CATEGORIES.filter(c=>c.soon || PRODUCTS.some(p=>p.cat===c.name)).map(c=>c.name)];
+const CATS = ["הכול", ...CATEGORIES.map(c=>c.name)];
 const SOON = new Set(CATEGORIES.filter(c=>c.soon).map(c=>c.name));
 let current = "הכול";
 try { const h = decodeURIComponent(location.hash.slice(1)); if (CATS.includes(h)) current = h; } catch(e){}
@@ -170,7 +170,7 @@ function renderGrid(){
   const list = PRODUCTS.filter(p=>current==="הכול"||p.cat===current).sort((a,b)=>(a.sold?1:0)-(b.sold?1:0));
   const g = document.getElementById("grid");
   if(SOON.has(current) && !list.length){ g.innerHTML = `<div class="empty soon-box"><div class="big">✨ בקרוב! ✨</div>${current} מחרוזים בדרך אלינו – שווה לחזור לבדוק</div>`; return; }
-  if(!list.length){ g.innerHTML = `<div class="empty">אין עדיין מוצרים בקטגוריה הזו</div>`; return; }
+  if(!list.length){ g.innerHTML = `<div class="empty soon-box"><div class="big">✨ מוצרים חדשים בדרך ✨</div>${current} מחרוזים יעלו לכאן ממש בקרוב</div>`; return; }
   g.innerHTML = list.map(p=>`<div class="card ${p.sold?"sold":""}" data-id="${p.id}" tabindex="0">
       <div class="img">${imgHtml(p)}${p.badge&&!p.sold?`<span class="badge">${p.badge}</span>`:""}${p.code?`<span class="code">#${p.code}</span>`:""}${p.sold?`<div class="stamp"><span>נמכר! 💖</span></div>`:""}</div>
       <div class="body"><h3>${p.name}</h3><p>${p.desc}</p><div class="price">${priceText(p)}</div></div></div>`).join("");
