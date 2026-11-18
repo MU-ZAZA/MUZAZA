@@ -190,7 +190,8 @@ function renderCats(){
   nav.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{ current=b.dataset.c; try{history.replaceState(null,"",current==="הכול"?location.pathname:"#"+encodeURIComponent(current))}catch(e){} renderCats(); renderGrid(); });
 }
 function renderGrid(){
-  const list = PRODUCTS.filter(p=>current==="הכול"||p.cat===current).sort((a,b)=>(a.sold?1:0)-(b.sold?1:0));
+  const list = PRODUCTS.filter(p=>current==="הכול"||p.cat===current).sort((a,b)=>{ const ci=c=>{const i=CATEGORIES.findIndex(x=>x.name===c);return i<0?99:i;};
+    return (a.sold?1:0)-(b.sold?1:0) || ci(a.cat)-ci(b.cat) || (a.code||"").localeCompare(b.code||""); });
   const g = document.getElementById("grid");
   if(SOON.has(current) && !list.length){ g.innerHTML = `<div class="empty soon-box"><div class="big">✨ בקרוב! ✨</div>${current} מחרוזים בדרך אלינו – שווה לחזור לבדוק</div>`; return; }
   if(!list.length){ g.innerHTML = `<div class="empty soon-box"><div class="big">✨ מוצרים חדשים בדרך ✨</div>${current} מחרוזים יעלו לכאן ממש בקרוב</div>`; return; }
