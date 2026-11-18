@@ -47,6 +47,7 @@
   .chip.soon{border:2px dashed var(--orange)}
   .soon-box{grid-column:1/-1;background:#fff;border-radius:22px;border:3px dashed var(--pink);font-size:1.1rem}
   .soon-box .big{font-size:2rem;font-weight:700;color:var(--magenta);margin-bottom:8px}
+  .deal{background:#fff3c4;color:var(--ink);font-weight:600;font-size:.88rem;padding:5px 10px;border-radius:10px;align-self:flex-start}
   .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px}
   /* modal */
   .overlay{position:fixed;inset:0;background:rgba(43,22,64,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
@@ -99,6 +100,7 @@
       <div class="cat" id="mCat"></div>
       <h2 id="mName"></h2>
       <div class="price" id="mPrice"></div>
+      <div class="deal" id="mDeal"></div>
       <p id="mDesc"></p>
       <ul id="mDetails"></ul>
       <a class="wa" id="mWa" href="#" target="_blank" rel="noopener">💬 להזמנה בוואטסאפ</a>
@@ -129,6 +131,7 @@ const PRODUCTS = [
   {id:105, code:"005", name:"מחזיק מפתחות סטיץ׳ ישנוני", cat:"מחזיקי מפתחות", price:15, desc:"מחזיק מפתחות סטיץ׳ ישנוני בגווני סגול מפנקים, עם נצנוצים.", details:["פריט יחיד – יש רק אחד!"], image:"img/005.jpg", badge:"חדש"},
   {id:106, code:"006", name:"מחזיק מפתחות סטיץ׳", cat:"מחזיקי מפתחות", price:15, desc:"מחזיק מפתחות סטיץ׳ בכחולים חלומיים.", details:["פריט יחיד – יש רק אחד!"], image:"img/006.jpg", badge:"חדש"},
   {id:107, code:"007", name:"מחזיק מפתחות סטיץ׳ מהורהר", cat:"מחזיקי מפתחות", price:15, desc:"מחזיק מפתחות סטיץ׳ מהורהר בגווני ורוד, כחול ותכלת.", details:["פריט יחיד – יש רק אחד!"], image:"img/007.jpg", badge:"חדש"},
+  {id:108, code:"008", name:"מסרק קפיברה מתוקה", cat:"מסרקים", price:15, deal:"או ₪25 בסט עם מראה תואמת", desc:"מסרק תכלת מעוטר בחרוזים ובקפיברה מתוקה.", details:["פריט יחיד – יש רק אחד!"], image:"img/008.jpg", badge:"חדש"},
 ];
 
 /* ===== קוד האתר ===== */
@@ -173,7 +176,7 @@ function renderGrid(){
   if(!list.length){ g.innerHTML = `<div class="empty soon-box"><div class="big">✨ מוצרים חדשים בדרך ✨</div>${current} מחרוזים יעלו לכאן ממש בקרוב</div>`; return; }
   g.innerHTML = list.map(p=>`<div class="card ${p.sold?"sold":""}" data-id="${p.id}" tabindex="0">
       <div class="img">${imgHtml(p)}${p.badge&&!p.sold?`<span class="badge">${p.badge}</span>`:""}${p.code?`<span class="code">#${p.code}</span>`:""}${p.sold?`<div class="stamp"><span>נמכר! 💖</span></div>`:""}</div>
-      <div class="body"><h3>${p.name}</h3><p>${p.desc}</p><div class="price">${priceText(p)}</div></div></div>`).join("");
+      <div class="body"><h3>${p.name}</h3><p>${p.desc}</p><div class="price">${priceText(p)}</div>${p.deal?`<div class="deal">🎁 ${p.deal}</div>`:""}</div></div>`).join("");
   g.querySelectorAll(".card").forEach(c=>{ c.onclick=()=>openP(+c.dataset.id); c.onkeydown=e=>{if(e.key==="Enter")openP(+c.dataset.id)}; });
 }
 function openP(id){
@@ -181,12 +184,13 @@ function openP(id){
   mImg.innerHTML = imgHtml(p) + (p.sold?`<div class="stamp"><span>נמכר! 💖</span></div>`:"");
   mCat.textContent = p.cat + (p.code?"  ·  #"+p.code:""); mName.textContent = p.name;
   mPrice.textContent = priceText(p); mDesc.textContent = p.desc;
+  mDeal.textContent = p.deal ? "🎁 " + p.deal : ""; mDeal.style.display = p.deal ? "" : "none";
   mDetails.innerHTML = (p.details||[]).map(d=>`<li>${d}</li>`).join("");
   const tag = p.code ? ` #${p.code}` : "";
   if (p.sold){ mWa.className="wa similar"; mWa.textContent="✨ רוצה אחד דומה?";
     mWa.href = waLink(`היי MUZAZA! 💖 ראיתי את ${p.name}${tag} שנמכר – אפשר להכין לי משהו דומה?`); }
   else { mWa.className="wa"; mWa.textContent="💬 להזמנה בוואטסאפ";
-    mWa.href = waLink(`היי MUZAZA! 💖 אני רוצה להזמין: ${p.name}${tag}` + (p.price?` (₪${p.price})`:"")); }
+    mWa.href = waLink(`היי MUZAZA! 💖 אני רוצה להזמין: ${p.name}${tag}` + (p.price?` (₪${p.price})`:"") + (p.deal?` / ${p.deal}`:"")); }
   overlay.classList.add("open");
 }
 function closeP(){ overlay.classList.remove("open"); }
