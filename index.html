@@ -212,7 +212,7 @@ function openP(id){
   mCat.textContent = p.cat + (p.code?"  ·  #"+p.code:""); mName.textContent = p.name;
   mPrice.textContent = priceText(p); mDesc.textContent = p.desc;
   mDeal.textContent = p.deal ? "🎁 " + p.deal : ""; mDeal.style.display = p.deal ? "" : "none";
-  mDetails.innerHTML = (p.details||[]).map(d=>`<li>${d}</li>`).join("");
+  mDetails.innerHTML = (p.details||[]).map(d=>p.sold ? d.replace("יש רק אחד","היה רק אחד") : d).map(d=>`<li>${d}</li>`).join("");
   const tag = p.code ? ` #${p.code}` : "";
   if (p.sold){ mWa.className="wa similar"; mWa.textContent="✨ רוצה אחד דומה?";
     mWa.href = waLink(`היי MUZAZA! 💖 ראיתי את ${p.name}${tag} שנמכר – אפשר להכין לי משהו דומה?`); }
